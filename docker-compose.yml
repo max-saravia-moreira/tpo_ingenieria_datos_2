@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: uber
       POSTGRES_PASSWORD: uber
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U uber -d uber_viajes"]
       interval: 5s
