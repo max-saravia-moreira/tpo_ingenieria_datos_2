@@ -205,6 +205,7 @@ const insertDriverLocation = `
     color,
     updated_at
   )
+  USING TTL 30
   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `;
 
