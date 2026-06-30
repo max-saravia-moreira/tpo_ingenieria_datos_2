@@ -1,0 +1,24 @@
+{
+  "name": "uber-viajes",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "@types/pg": "^8.11.14",
+    "drizzle-kit": "^0.31.1",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "drizzle-orm": "^0.44.2",
+    "pg": "^8.16.0"
+  }
+}
