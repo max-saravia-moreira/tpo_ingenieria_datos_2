@@ -7,9 +7,9 @@ Proyecto del TPO con el modelo relacional del ciclo de vida de viajes (usuarios,
 - [Node.js](https://nodejs.org/) 18+
 - [Docker](https://www.docker.com/) (para levantar PostgreSQL y Cassandra localmente)
 
-## Configuración inicial
+## Preparar Todo Desde Cero
 
-1. Instalar dependencias:
+1. Instalar las dependencias del proyecto:
 
 ```bash
 npm install
@@ -23,11 +23,99 @@ cp .env.example .env
 
 Los valores por defecto apuntan a las bases levantadas con Docker Compose:
 
-```
+```env
 DATABASE_URL=postgresql://uber:uber@localhost:5432/uber_viajes
 CASSANDRA_HOST=localhost
 CASSANDRA_KEYSPACE=uber
 CASSANDRA_DATACENTER=datacenter1
+```
+
+3. Levantar PostgreSQL y Cassandra:
+
+```bash
+docker compose up -d
+```
+
+Este comando levanta ambas bases. Además, el servicio `cassandra-init` crea automáticamente el keyspace `uber` si todavía no existe.
+
+4. Verificar que los contenedores estén healthy:
+
+```bash
+docker compose ps
+```
+
+5. Aplicar las migraciones de PostgreSQL:
+
+```bash
+npm run postgres:migrate
+```
+
+6. Aplicar el esquema de Cassandra:
+
+```bash
+npm run cassandra:migrate
+```
+
+> Cassandra puede tardar cerca de un minuto en quedar disponible después de `docker compose up -d`. Si el comando reintenta la conexión, esperá a que el healthcheck termine y volvé a ejecutarlo si fuera necesario.
+
+7. Cargar los datos de prueba en ambas bases:
+
+```bash
+npm run seed:all
+```
+
+Los seeds son **idempotentes**: borran las tablas y vuelven a insertar los registros definidos en `src/db/seed.ts` y `src/cassandra/seed.ts`.
+
+8. Probar que la consulta Cassandra del TPO responde:
+
+```bash
+npm run cassandra:list
+```
+
+9. Opcionalmente, abrir Drizzle Studio para explorar PostgreSQL:
+
+```bash
+npm run postgres:studio
+```
+
+### Comandos Útiles Del Setup
+
+Alternativa para desarrollo rápido sin migraciones PostgreSQL:
+
+```bash
+npm run postgres:push
+```
+
+Si modificás `src/db/schema.ts`, generá una nueva migración con:
+
+```bash
+npm run postgres:generate
+npm run postgres:migrate
+```
+
+Para ejecutar los seeds por separado:
+
+```bash
+npm run postgres:seed
+npm run cassandra:seed
+```
+
+Salida esperada del seed PostgreSQL:
+
+```text
+Seed completado:
+  usuarios:    18
+  conductores: 10
+  vehiculos:   10
+  viajes:      12
+  pagos:       10
+```
+
+Salida esperada del seed Cassandra:
+
+```text
+Seed Cassandra completado:
+  conductores_por_zona: 10
 ```
 
 ## Datos de conexión local
@@ -48,91 +136,6 @@ Cassandra:
 - Keyspace: `uber`
 - Datacenter local: `datacenter1`
 - Usuario/password: no configurados en Docker Compose
-
-## Levantar las bases de datos
-
-```bash
-docker compose up -d
-```
-
-Este comando levanta PostgreSQL y Cassandra. Además, el servicio `cassandra-init` crea automáticamente el keyspace `uber` si todavía no existe.
-
-Verificar que los contenedores estén healthy:
-
-```bash
-docker compose ps
-```
-
-## Crear el esquema
-
-PostgreSQL:
-
-**Primera vez** (aplica la migración inicial):
-
-```bash
-npm run postgres:migrate
-```
-
-Alternativa para desarrollo rápido sin migraciones:
-
-```bash
-npm run postgres:push
-```
-
-Si modificás `src/db/schema.ts`, generá una nueva migración con:
-
-```bash
-npm run postgres:generate
-npm run postgres:migrate
-```
-
-Cassandra:
-
-```bash
-npm run cassandra:migrate
-```
-
-> Cassandra puede tardar cerca de un minuto en quedar disponible después de `docker compose up -d`. Si el comando reintenta la conexión, esperá a que el healthcheck termine y volvé a ejecutarlo si fuera necesario.
-
-## Cargar datos de prueba (seed)
-
-Los seeds son **idempotentes**: borran las tablas y vuelven a insertar los registros definidos en `src/db/seed.ts` y `src/cassandra/seed.ts`.
-
-PostgreSQL:
-
-```bash
-npm run postgres:seed
-```
-
-Salida esperada:
-
-```
-Seed completado:
-  usuarios:    18
-  conductores: 10
-  vehiculos:   10
-  viajes:      12
-  pagos:       10
-```
-
-Cassandra:
-
-```bash
-npm run cassandra:seed
-```
-
-Salida esperada:
-
-```
-Seed Cassandra completado:
-  conductores_por_zona: 10
-```
-
-También podés correr ambos seeds en secuencia:
-
-```bash
-npm run seed:all
-```
 
 ## Explorar los datos
 
