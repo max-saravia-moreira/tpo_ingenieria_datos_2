@@ -2,6 +2,8 @@
 
 Proyecto del TPO con el modelo relacional del ciclo de vida de viajes (usuarios, conductores, vehículos, viajes y pagos), usando **PostgreSQL**, **Cassandra**, **Drizzle ORM** y **TypeScript**.
 
+Los diagramas del modelo están en [`DIAGRAMAS.md`](./DIAGRAMAS.md).
+
 ## Requisitos
 
 - [Node.js](https://nodejs.org/) 18+
