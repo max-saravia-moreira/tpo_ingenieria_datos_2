@@ -4,15 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx src/db/seed.ts",
+    "postgres:generate": "drizzle-kit generate",
+    "postgres:migrate": "drizzle-kit migrate",
+    "postgres:push": "drizzle-kit push",
+    "postgres:studio": "drizzle-kit studio",
+    "postgres:seed": "tsx src/db/seed.ts",
     "cassandra:migrate": "tsx src/cassandra/migrate.ts",
     "cassandra:seed": "tsx src/cassandra/seed.ts",
     "cassandra:list": "tsx src/scripts/list-conductores-zona.ts",
-    "db:seed:all": "npm run db:seed && npm run cassandra:seed"
+    "seed:all": "npm run postgres:seed && npm run cassandra:seed"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",

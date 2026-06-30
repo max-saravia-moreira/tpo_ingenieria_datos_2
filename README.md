@@ -70,20 +70,20 @@ PostgreSQL:
 **Primera vez** (aplica la migración inicial):
 
 ```bash
-npm run db:migrate
+npm run postgres:migrate
 ```
 
 Alternativa para desarrollo rápido sin migraciones:
 
 ```bash
-npm run db:push
+npm run postgres:push
 ```
 
 Si modificás `src/db/schema.ts`, generá una nueva migración con:
 
 ```bash
-npm run db:generate
-npm run db:migrate
+npm run postgres:generate
+npm run postgres:migrate
 ```
 
 Cassandra:
@@ -101,7 +101,7 @@ Los seeds son **idempotentes**: borran las tablas y vuelven a insertar los regis
 PostgreSQL:
 
 ```bash
-npm run db:seed
+npm run postgres:seed
 ```
 
 Salida esperada:
@@ -131,7 +131,7 @@ Seed Cassandra completado:
 También podés correr ambos seeds en secuencia:
 
 ```bash
-npm run db:seed:all
+npm run seed:all
 ```
 
 ## Explorar los datos
@@ -139,7 +139,7 @@ npm run db:seed:all
 Drizzle Studio abre una interfaz web para consultar las tablas:
 
 ```bash
-npm run db:studio
+npm run postgres:studio
 ```
 
 Para probar la consulta Cassandra del TPO, que lista hasta 5 conductores por zona (`geohash`):
@@ -158,15 +158,15 @@ npm run cassandra:list -- 69y7p
 
 | Comando | Descripción |
 |---------|-------------|
-| `npm run db:generate` | Genera migraciones a partir del schema |
-| `npm run db:migrate` | Aplica migraciones pendientes |
-| `npm run db:push` | Sincroniza el schema directo a la base (sin migración) |
-| `npm run db:seed` | Carga los datos de prueba |
-| `npm run db:studio` | Abre Drizzle Studio |
+| `npm run postgres:generate` | Genera migraciones a partir del schema PostgreSQL |
+| `npm run postgres:migrate` | Aplica migraciones pendientes de PostgreSQL |
+| `npm run postgres:push` | Sincroniza el schema PostgreSQL directo a la base (sin migración) |
+| `npm run postgres:seed` | Carga los datos de prueba en PostgreSQL |
+| `npm run postgres:studio` | Abre Drizzle Studio |
 | `npm run cassandra:migrate` | Aplica el esquema CQL de Cassandra |
 | `npm run cassandra:seed` | Carga `conductores_por_zona` en Cassandra |
 | `npm run cassandra:list` | Lista hasta 5 conductores para un geohash |
-| `npm run db:seed:all` | Corre el seed PostgreSQL y luego el seed Cassandra |
+| `npm run seed:all` | Corre el seed PostgreSQL y luego el seed Cassandra |
 
 ## Estructura relevante
 
@@ -204,7 +204,7 @@ docker compose down -v
 
 ## Problemas frecuentes
 
-### `db:migrate` se queda en "applying migrations..." y falla
+### `postgres:migrate` se queda en "applying migrations..." y falla
 
 Casi siempre la base no está disponible. Verificá el contenedor:
 
@@ -225,5 +225,5 @@ docker compose up -d
 Esperá a que el healthcheck pase y volvé a migrar:
 
 ```bash
-npm run db:migrate
+npm run postgres:migrate
 ```
