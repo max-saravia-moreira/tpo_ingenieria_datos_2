@@ -27,12 +27,12 @@ CREATE TABLE "pagos" (
 --> statement-breakpoint
 CREATE TABLE "usuarios" (
 	"usuario_id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"email" varchar(255) NOT NULL,
+	"correo" varchar(255) NOT NULL,
 	"telefono" varchar(20) NOT NULL,
 	"nombre" varchar(255) NOT NULL,
 	"creado_en" timestamp with time zone DEFAULT now() NOT NULL,
 	"activo" boolean DEFAULT true NOT NULL,
-	CONSTRAINT "usuarios_email_unique" UNIQUE("email")
+	CONSTRAINT "usuarios_correo_unique" UNIQUE("correo")
 );
 --> statement-breakpoint
 CREATE TABLE "viajes" (
@@ -42,14 +42,14 @@ CREATE TABLE "viajes" (
 	"estado" "estado_viaje" DEFAULT 'solicitado' NOT NULL,
 	"solicitado_en" timestamp with time zone DEFAULT now() NOT NULL,
 	"aceptado_en" timestamp with time zone,
-	"pickup_en" timestamp with time zone,
-	"dropoff_en" timestamp with time zone,
-	"pickup_lat" double precision NOT NULL,
-	"pickup_lng" double precision NOT NULL,
-	"dropoff_lat" double precision,
-	"dropoff_lng" double precision,
-	"distancia_km" real,
-	"duracion_min" integer,
+	"fecha_partida" timestamp with time zone,
+	"fecha_llegada" timestamp with time zone,
+	"origen_latitud" double precision NOT NULL,
+	"origen_longitud" double precision NOT NULL,
+	"destino_latitud" double precision,
+	"destino_longitud" double precision,
+	"distancia_kilometros" real,
+	"duracion_minutos" integer,
 	"tarifa_base" numeric(10, 2) NOT NULL,
 	"multiplicador" real DEFAULT 1 NOT NULL,
 	"tarifa_total" numeric(10, 2)

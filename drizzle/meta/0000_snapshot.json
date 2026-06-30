@@ -1,5 +1,5 @@
 {
-  "id": "ae45de52-c6d4-4259-9988-2b179566d262",
+  "id": "616cd60b-cce9-4cc1-8068-91f1d203a26c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -233,8 +233,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "email": {
-          "name": "email",
+        "correo": {
+          "name": "correo",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
@@ -286,11 +286,11 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "usuarios_email_unique": {
-          "name": "usuarios_email_unique",
+        "usuarios_correo_unique": {
+          "name": "usuarios_correo_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "email"
+            "correo"
           ]
         }
       },
@@ -342,50 +342,50 @@
           "primaryKey": false,
           "notNull": false
         },
-        "pickup_en": {
-          "name": "pickup_en",
+        "fecha_partida": {
+          "name": "fecha_partida",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         },
-        "dropoff_en": {
-          "name": "dropoff_en",
+        "fecha_llegada": {
+          "name": "fecha_llegada",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         },
-        "pickup_lat": {
-          "name": "pickup_lat",
+        "origen_latitud": {
+          "name": "origen_latitud",
           "type": "double precision",
           "primaryKey": false,
           "notNull": true
         },
-        "pickup_lng": {
-          "name": "pickup_lng",
+        "origen_longitud": {
+          "name": "origen_longitud",
           "type": "double precision",
           "primaryKey": false,
           "notNull": true
         },
-        "dropoff_lat": {
-          "name": "dropoff_lat",
+        "destino_latitud": {
+          "name": "destino_latitud",
           "type": "double precision",
           "primaryKey": false,
           "notNull": false
         },
-        "dropoff_lng": {
-          "name": "dropoff_lng",
+        "destino_longitud": {
+          "name": "destino_longitud",
           "type": "double precision",
           "primaryKey": false,
           "notNull": false
         },
-        "distancia_km": {
-          "name": "distancia_km",
+        "distancia_kilometros": {
+          "name": "distancia_kilometros",
           "type": "real",
           "primaryKey": false,
           "notNull": false
         },
-        "duracion_min": {
-          "name": "duracion_min",
+        "duracion_minutos": {
+          "name": "duracion_minutos",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
