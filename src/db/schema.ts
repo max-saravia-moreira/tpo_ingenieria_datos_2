@@ -128,7 +128,7 @@ export const pagos = pgTable(
       .unique()
       .references(() => viajes.viajeId),
     monto: decimal("monto", { precision: 10, scale: 2 }).notNull(),
-    moneda: char("moneda", { length: 3 }).notNull().default("USD"),
+    moneda: char("moneda", { length: 3 }).notNull().default("ARS"),
     metodo: metodoPagoEnum("metodo").notNull(),
     estado: estadoPagoEnum("estado").notNull().default("pendiente"),
     procesadoEn: timestamp("procesado_en", { withTimezone: true }),
