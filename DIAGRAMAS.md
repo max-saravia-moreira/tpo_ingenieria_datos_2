@@ -1,6 +1,6 @@
 # Diagramas de base de datos
 
-## Diagrama entidad-relación PostgreSQL
+## Diagrama entidad-relación MySQL
 
 ```mermaid
 erDiagram

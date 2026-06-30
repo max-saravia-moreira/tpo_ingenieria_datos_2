@@ -1,44 +1,47 @@
 {
-  "id": "616cd60b-cce9-4cc1-8068-91f1d203a26c",
+  "version": "5",
+  "dialect": "mysql",
+  "id": "89655f42-19e1-4683-b9d4-0ecee700339d",
   "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "7",
-  "dialect": "postgresql",
   "tables": {
-    "public.conductores": {
+    "conductores": {
       "name": "conductores",
-      "schema": "",
       "columns": {
         "conductor_id": {
           "name": "conductor_id",
-          "type": "uuid",
-          "primaryKey": true,
+          "type": "varchar(36)",
+          "primaryKey": false,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "autoincrement": false
         },
         "usuario_id": {
           "name": "usuario_id",
-          "type": "uuid",
+          "type": "varchar(36)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "licencia": {
           "name": "licencia",
           "type": "varchar(50)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "calificacion": {
           "name": "calificacion",
-          "type": "numeric(3, 2)",
+          "type": "decimal(3,2)",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false,
           "default": "'5.00'"
         },
         "viajes_total": {
           "name": "viajes_total",
-          "type": "integer",
+          "type": "int",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false,
           "default": 0
         },
         "activo": {
@@ -46,6 +49,7 @@
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false,
           "default": true
         }
       },
@@ -53,17 +57,9 @@
         "idx_conductores_calificacion": {
           "name": "idx_conductores_calificacion",
           "columns": [
-            {
-              "expression": "calificacion",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
+            "calificacion"
           ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
+          "isUnique": false
         }
       },
       "foreignKeys": {
@@ -81,211 +77,92 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "conductores_conductor_id": {
+          "name": "conductores_conductor_id",
+          "columns": [
+            "conductor_id"
+          ]
+        }
+      },
       "uniqueConstraints": {
         "conductores_usuario_id_unique": {
           "name": "conductores_usuario_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "usuario_id"
           ]
         },
         "conductores_licencia_unique": {
           "name": "conductores_licencia_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "licencia"
           ]
         }
       },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+      "checkConstraint": {}
     },
-    "public.vehiculos": {
-      "name": "vehiculos",
-      "schema": "",
-      "columns": {
-        "vehiculo_id": {
-          "name": "vehiculo_id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "conductor_id": {
-          "name": "conductor_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "patente": {
-          "name": "patente",
-          "type": "varchar(10)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "marca": {
-          "name": "marca",
-          "type": "varchar(80)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "modelo": {
-          "name": "modelo",
-          "type": "varchar(80)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "color": {
-          "name": "color",
-          "type": "varchar(40)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "tipo_vehiculo": {
-          "name": "tipo_vehiculo",
-          "type": "tipo_vehiculo",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "activo": {
-          "name": "activo",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
-        }
-      },
-      "indexes": {
-        "idx_vehiculos_conductor_id": {
-          "name": "idx_vehiculos_conductor_id",
-          "columns": [
-            {
-              "expression": "conductor_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_vehiculos_tipo_vehiculo": {
-          "name": "idx_vehiculos_tipo_vehiculo",
-          "columns": [
-            {
-              "expression": "tipo_vehiculo",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "vehiculos_conductor_id_conductores_conductor_id_fk": {
-          "name": "vehiculos_conductor_id_conductores_conductor_id_fk",
-          "tableFrom": "vehiculos",
-          "tableTo": "conductores",
-          "columnsFrom": [
-            "conductor_id"
-          ],
-          "columnsTo": [
-            "conductor_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "vehiculos_patente_unique": {
-          "name": "vehiculos_patente_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "patente"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.pagos": {
+    "pagos": {
       "name": "pagos",
-      "schema": "",
       "columns": {
         "pago_id": {
           "name": "pago_id",
-          "type": "uuid",
-          "primaryKey": true,
+          "type": "varchar(36)",
+          "primaryKey": false,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "autoincrement": false
         },
         "viaje_id": {
           "name": "viaje_id",
-          "type": "uuid",
+          "type": "varchar(36)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "monto": {
           "name": "monto",
-          "type": "numeric(10, 2)",
+          "type": "decimal(10,2)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "moneda": {
           "name": "moneda",
           "type": "char(3)",
           "primaryKey": false,
           "notNull": true,
-          "default": "'USD'"
+          "autoincrement": false,
+          "default": "'ARS'"
         },
         "metodo": {
           "name": "metodo",
-          "type": "metodo_pago",
-          "typeSchema": "public",
+          "type": "enum('tarjeta_credito','tarjeta_debito','efectivo','billetera_virtual')",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "estado": {
           "name": "estado",
-          "type": "estado_pago",
-          "typeSchema": "public",
+          "type": "enum('pendiente','capturado','fallido','reembolsado')",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false,
           "default": "'pendiente'"
         },
         "procesado_en": {
           "name": "procesado_en",
-          "type": "timestamp with time zone",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
         "idx_pagos_estado": {
           "name": "idx_pagos_estado",
           "columns": [
-            {
-              "expression": "estado",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
+            "estado"
           ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
+          "isUnique": false
         }
       },
       "foreignKeys": {
@@ -303,61 +180,69 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "pagos_pago_id": {
+          "name": "pagos_pago_id",
+          "columns": [
+            "pago_id"
+          ]
+        }
+      },
       "uniqueConstraints": {
         "pagos_viaje_id_unique": {
           "name": "pagos_viaje_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "viaje_id"
           ]
         }
       },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+      "checkConstraint": {}
     },
-    "public.usuarios": {
+    "usuarios": {
       "name": "usuarios",
-      "schema": "",
       "columns": {
         "usuario_id": {
           "name": "usuario_id",
-          "type": "uuid",
-          "primaryKey": true,
+          "type": "varchar(36)",
+          "primaryKey": false,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "autoincrement": false
         },
         "correo": {
           "name": "correo",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "telefono": {
           "name": "telefono",
           "type": "varchar(20)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "nombre": {
           "name": "nombre",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "creado_en": {
           "name": "creado_en",
-          "type": "timestamp with time zone",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "autoincrement": false,
+          "default": "(now())"
         },
         "activo": {
           "name": "activo",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false,
           "default": true
         }
       },
@@ -365,227 +250,308 @@
         "idx_usuarios_telefono": {
           "name": "idx_usuarios_telefono",
           "columns": [
-            {
-              "expression": "telefono",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
+            "telefono"
           ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
+          "isUnique": false
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "usuarios_usuario_id": {
+          "name": "usuarios_usuario_id",
+          "columns": [
+            "usuario_id"
+          ]
+        }
+      },
       "uniqueConstraints": {
         "usuarios_correo_unique": {
           "name": "usuarios_correo_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "correo"
           ]
         }
       },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+      "checkConstraint": {}
     },
-    "public.viajes": {
-      "name": "viajes",
-      "schema": "",
+    "vehiculos": {
+      "name": "vehiculos",
       "columns": {
-        "viaje_id": {
-          "name": "viaje_id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "pasajero_id": {
-          "name": "pasajero_id",
-          "type": "uuid",
+        "vehiculo_id": {
+          "name": "vehiculo_id",
+          "type": "varchar(36)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "conductor_id": {
           "name": "conductor_id",
-          "type": "uuid",
+          "type": "varchar(36)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
+        },
+        "patente": {
+          "name": "patente",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "marca": {
+          "name": "marca",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "modelo": {
+          "name": "modelo",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "color": {
+          "name": "color",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "tipo_vehiculo": {
+          "name": "tipo_vehiculo",
+          "type": "enum('uberX','uberXL','black','moto')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "activo": {
+          "name": "activo",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        }
+      },
+      "indexes": {
+        "idx_vehiculos_conductor_id": {
+          "name": "idx_vehiculos_conductor_id",
+          "columns": [
+            "conductor_id"
+          ],
+          "isUnique": false
+        },
+        "idx_vehiculos_tipo_vehiculo": {
+          "name": "idx_vehiculos_tipo_vehiculo",
+          "columns": [
+            "tipo_vehiculo"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "vehiculos_conductor_id_conductores_conductor_id_fk": {
+          "name": "vehiculos_conductor_id_conductores_conductor_id_fk",
+          "tableFrom": "vehiculos",
+          "tableTo": "conductores",
+          "columnsFrom": [
+            "conductor_id"
+          ],
+          "columnsTo": [
+            "conductor_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "vehiculos_vehiculo_id": {
+          "name": "vehiculos_vehiculo_id",
+          "columns": [
+            "vehiculo_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "vehiculos_patente_unique": {
+          "name": "vehiculos_patente_unique",
+          "columns": [
+            "patente"
+          ]
+        }
+      },
+      "checkConstraint": {}
+    },
+    "viajes": {
+      "name": "viajes",
+      "columns": {
+        "viaje_id": {
+          "name": "viaje_id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "pasajero_id": {
+          "name": "pasajero_id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "conductor_id": {
+          "name": "conductor_id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         },
         "vehiculo_id": {
           "name": "vehiculo_id",
-          "type": "uuid",
+          "type": "varchar(36)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "estado": {
           "name": "estado",
-          "type": "estado_viaje",
-          "typeSchema": "public",
+          "type": "enum('solicitado','aceptado','en_progreso','completado','cancelado')",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false,
           "default": "'solicitado'"
         },
         "solicitado_en": {
           "name": "solicitado_en",
-          "type": "timestamp with time zone",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "autoincrement": false,
+          "default": "(now())"
         },
         "aceptado_en": {
           "name": "aceptado_en",
-          "type": "timestamp with time zone",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "fecha_partida": {
           "name": "fecha_partida",
-          "type": "timestamp with time zone",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "fecha_llegada": {
           "name": "fecha_llegada",
-          "type": "timestamp with time zone",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "origen_latitud": {
           "name": "origen_latitud",
-          "type": "double precision",
+          "type": "double",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "origen_longitud": {
           "name": "origen_longitud",
-          "type": "double precision",
+          "type": "double",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "destino_latitud": {
           "name": "destino_latitud",
-          "type": "double precision",
+          "type": "double",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "destino_longitud": {
           "name": "destino_longitud",
-          "type": "double precision",
+          "type": "double",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "distancia_kilometros": {
           "name": "distancia_kilometros",
-          "type": "real",
+          "type": "float",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "duracion_minutos": {
           "name": "duracion_minutos",
-          "type": "integer",
+          "type": "int",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "tarifa_base": {
           "name": "tarifa_base",
-          "type": "numeric(10, 2)",
+          "type": "decimal(10,2)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "multiplicador": {
           "name": "multiplicador",
-          "type": "real",
+          "type": "float",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false,
           "default": 1
         },
         "tarifa_total": {
           "name": "tarifa_total",
-          "type": "numeric(10, 2)",
+          "type": "decimal(10,2)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
         "idx_viajes_pasajero_id": {
           "name": "idx_viajes_pasajero_id",
           "columns": [
-            {
-              "expression": "pasajero_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
+            "pasajero_id"
           ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
+          "isUnique": false
         },
         "idx_viajes_conductor_id": {
           "name": "idx_viajes_conductor_id",
           "columns": [
-            {
-              "expression": "conductor_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
+            "conductor_id"
           ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
+          "isUnique": false
         },
         "idx_viajes_vehiculo_id": {
           "name": "idx_viajes_vehiculo_id",
           "columns": [
-            {
-              "expression": "vehiculo_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
+            "vehiculo_id"
           ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
+          "isUnique": false
         },
         "idx_viajes_estado": {
           "name": "idx_viajes_estado",
           "columns": [
-            {
-              "expression": "estado",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
+            "estado"
           ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
+          "isUnique": false
         },
         "idx_viajes_solicitado_en": {
           "name": "idx_viajes_solicitado_en",
           "columns": [
-            {
-              "expression": "solicitado_en",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
+            "solicitado_en"
           ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
+          "isUnique": false
         }
       },
       "foreignKeys": {
@@ -629,64 +595,26 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "viajes_viaje_id": {
+          "name": "viajes_viaje_id",
+          "columns": [
+            "viaje_id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+      "checkConstraint": {}
     }
   },
-  "enums": {
-    "public.estado_pago": {
-      "name": "estado_pago",
-      "schema": "public",
-      "values": [
-        "pendiente",
-        "capturado",
-        "fallido",
-        "reembolsado"
-      ]
-    },
-    "public.estado_viaje": {
-      "name": "estado_viaje",
-      "schema": "public",
-      "values": [
-        "solicitado",
-        "aceptado",
-        "en_progreso",
-        "completado",
-        "cancelado"
-      ]
-    },
-    "public.metodo_pago": {
-      "name": "metodo_pago",
-      "schema": "public",
-      "values": [
-        "tarjeta_credito",
-        "tarjeta_debito",
-        "efectivo",
-        "billetera_virtual"
-      ]
-    },
-    "public.tipo_vehiculo": {
-      "name": "tipo_vehiculo",
-      "schema": "public",
-      "values": [
-        "uberX",
-        "uberXL",
-        "black",
-        "moto"
-      ]
-    }
-  },
-  "schemas": {},
-  "sequences": {},
-  "roles": {},
-  "policies": {},
   "views": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "tables": {},
+    "indexes": {}
   }
 }

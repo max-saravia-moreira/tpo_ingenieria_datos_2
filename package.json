@@ -4,19 +4,18 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "postgres:generate": "drizzle-kit generate",
-    "postgres:migrate": "drizzle-kit migrate",
-    "postgres:push": "drizzle-kit push",
-    "postgres:studio": "drizzle-kit studio",
-    "postgres:seed": "tsx src/db/seed.ts",
+    "mysql:generate": "drizzle-kit generate",
+    "mysql:migrate": "drizzle-kit migrate",
+    "mysql:push": "drizzle-kit push",
+    "mysql:studio": "drizzle-kit studio",
+    "mysql:seed": "tsx src/db/seed.ts",
     "cassandra:migrate": "tsx src/cassandra/migrate.ts",
     "cassandra:seed": "tsx src/cassandra/seed.ts",
     "cassandra:list": "tsx src/scripts/list-conductores-zona.ts",
-    "seed:all": "npm run postgres:seed && npm run cassandra:seed"
+    "seed:all": "npm run mysql:seed && npm run cassandra:seed"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",
-    "@types/pg": "^8.11.14",
     "drizzle-kit": "^0.31.1",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3"
@@ -25,7 +24,7 @@
     "cassandra-driver": "^4.9.0",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.44.2",
-    "ngeohash": "^0.6.3",
-    "pg": "^8.16.0"
+    "mysql2": "^3.22.5",
+    "ngeohash": "^0.6.3"
   }
 }

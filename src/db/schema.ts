@@ -1,60 +1,64 @@
+import { randomUUID } from "node:crypto";
 import { relations } from "drizzle-orm";
 import {
   boolean,
   char,
   decimal,
-  doublePrecision,
+  double,
+  float,
   index,
-  integer,
-  pgEnum,
-  pgTable,
-  real,
+  int,
+  mysqlEnum,
+  mysqlTable,
   timestamp,
-  uuid,
   varchar,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/mysql-core";
+
+const uuidColumn = (name: string) => varchar(name, { length: 36 });
+const uuidPrimaryKey = (name: string) =>
+  uuidColumn(name).primaryKey().$defaultFn(randomUUID);
 
 // ─── Enumeraciones ───────────────────────────────────────
 
-export const estadoViajeEnum = pgEnum("estado_viaje", [
+export const estadoViajeValues = [
   "solicitado",
   "aceptado",
   "en_progreso",
   "completado",
   "cancelado",
-]);
+] as const;
 
-export const metodoPagoEnum = pgEnum("metodo_pago", [
+export const metodoPagoValues = [
   "tarjeta_credito",
   "tarjeta_debito",
   "efectivo",
   "billetera_virtual",
-]);
+] as const;
 
-export const estadoPagoEnum = pgEnum("estado_pago", [
+export const estadoPagoValues = [
   "pendiente",
   "capturado",
   "fallido",
   "reembolsado",
-]);
+] as const;
 
-export const tipoVehiculoEnum = pgEnum("tipo_vehiculo", [
+export const tipoVehiculoValues = [
   "uberX",
   "uberXL",
   "black",
   "moto",
-]);
+] as const;
 
 // ─── Tablas ──────────────────────────────────────────────
 
-export const usuarios = pgTable(
+export const usuarios = mysqlTable(
   "usuarios",
   {
-    usuarioId: uuid("usuario_id").primaryKey().defaultRandom(),
+    usuarioId: uuidPrimaryKey("usuario_id"),
     correo: varchar("correo", { length: 255 }).notNull().unique(),
     telefono: varchar("telefono", { length: 20 }).notNull(),
     nombre: varchar("nombre", { length: 255 }).notNull(),
-    creadoEn: timestamp("creado_en", { withTimezone: true })
+    creadoEn: timestamp("creado_en", { mode: "date" })
       .notNull()
       .defaultNow(),
     activo: boolean("activo").notNull().default(true),
@@ -62,11 +66,11 @@ export const usuarios = pgTable(
   (table) => [index("idx_usuarios_telefono").on(table.telefono)],
 );
 
-export const conductores = pgTable(
+export const conductores = mysqlTable(
   "conductores",
   {
-    conductorId: uuid("conductor_id").primaryKey().defaultRandom(),
-    usuarioId: uuid("usuario_id")
+    conductorId: uuidPrimaryKey("conductor_id"),
+    usuarioId: uuidColumn("usuario_id")
       .notNull()
       .unique()
       .references(() => usuarios.usuarioId),
@@ -74,24 +78,24 @@ export const conductores = pgTable(
     calificacion: decimal("calificacion", { precision: 3, scale: 2 })
       .notNull()
       .default("5.00"),
-    viajesTotal: integer("viajes_total").notNull().default(0),
+    viajesTotal: int("viajes_total").notNull().default(0),
     activo: boolean("activo").notNull().default(true),
   },
   (table) => [index("idx_conductores_calificacion").on(table.calificacion)],
 );
 
-export const vehiculos = pgTable(
+export const vehiculos = mysqlTable(
   "vehiculos",
   {
-    vehiculoId: uuid("vehiculo_id").primaryKey().defaultRandom(),
-    conductorId: uuid("conductor_id")
+    vehiculoId: uuidPrimaryKey("vehiculo_id"),
+    conductorId: uuidColumn("conductor_id")
       .notNull()
       .references(() => conductores.conductorId),
     patente: varchar("patente", { length: 10 }).notNull().unique(),
     marca: varchar("marca", { length: 80 }).notNull(),
     modelo: varchar("modelo", { length: 80 }).notNull(),
     color: varchar("color", { length: 40 }).notNull(),
-    tipoVehiculo: tipoVehiculoEnum("tipo_vehiculo").notNull(),
+    tipoVehiculo: mysqlEnum("tipo_vehiculo", tipoVehiculoValues).notNull(),
     activo: boolean("activo").notNull().default(true),
   },
   (table) => [
@@ -100,34 +104,36 @@ export const vehiculos = pgTable(
   ],
 );
 
-export const viajes = pgTable(
+export const viajes = mysqlTable(
   "viajes",
   {
-    viajeId: uuid("viaje_id").primaryKey().defaultRandom(),
-    pasajeroId: uuid("pasajero_id")
+    viajeId: uuidPrimaryKey("viaje_id"),
+    pasajeroId: uuidColumn("pasajero_id")
       .notNull()
       .references(() => usuarios.usuarioId),
-    conductorId: uuid("conductor_id")
+    conductorId: uuidColumn("conductor_id")
       .notNull()
       .references(() => conductores.conductorId),
-    vehiculoId: uuid("vehiculo_id")
+    vehiculoId: uuidColumn("vehiculo_id")
       .notNull()
       .references(() => vehiculos.vehiculoId),
-    estado: estadoViajeEnum("estado").notNull().default("solicitado"),
-    solicitadoEn: timestamp("solicitado_en", { withTimezone: true })
+    estado: mysqlEnum("estado", estadoViajeValues)
+      .notNull()
+      .default("solicitado"),
+    solicitadoEn: timestamp("solicitado_en", { mode: "date" })
       .notNull()
       .defaultNow(),
-    aceptadoEn: timestamp("aceptado_en", { withTimezone: true }),
-    fechaPartida: timestamp("fecha_partida", { withTimezone: true }),
-    fechaLlegada: timestamp("fecha_llegada", { withTimezone: true }),
-    origenLatitud: doublePrecision("origen_latitud").notNull(),
-    origenLongitud: doublePrecision("origen_longitud").notNull(),
-    destinoLatitud: doublePrecision("destino_latitud"),
-    destinoLongitud: doublePrecision("destino_longitud"),
-    distanciaKilometros: real("distancia_kilometros"),
-    duracionMinutos: integer("duracion_minutos"),
+    aceptadoEn: timestamp("aceptado_en", { mode: "date" }),
+    fechaPartida: timestamp("fecha_partida", { mode: "date" }),
+    fechaLlegada: timestamp("fecha_llegada", { mode: "date" }),
+    origenLatitud: double("origen_latitud").notNull(),
+    origenLongitud: double("origen_longitud").notNull(),
+    destinoLatitud: double("destino_latitud"),
+    destinoLongitud: double("destino_longitud"),
+    distanciaKilometros: float("distancia_kilometros"),
+    duracionMinutos: int("duracion_minutos"),
     tarifaBase: decimal("tarifa_base", { precision: 10, scale: 2 }).notNull(),
-    multiplicador: real("multiplicador").notNull().default(1.0),
+    multiplicador: float("multiplicador").notNull().default(1.0),
     tarifaTotal: decimal("tarifa_total", { precision: 10, scale: 2 }),
   },
   (table) => [
@@ -139,19 +145,19 @@ export const viajes = pgTable(
   ],
 );
 
-export const pagos = pgTable(
+export const pagos = mysqlTable(
   "pagos",
   {
-    pagoId: uuid("pago_id").primaryKey().defaultRandom(),
-    viajeId: uuid("viaje_id")
+    pagoId: uuidPrimaryKey("pago_id"),
+    viajeId: uuidColumn("viaje_id")
       .notNull()
       .unique()
       .references(() => viajes.viajeId),
     monto: decimal("monto", { precision: 10, scale: 2 }).notNull(),
     moneda: char("moneda", { length: 3 }).notNull().default("ARS"),
-    metodo: metodoPagoEnum("metodo").notNull(),
-    estado: estadoPagoEnum("estado").notNull().default("pendiente"),
-    procesadoEn: timestamp("procesado_en", { withTimezone: true }),
+    metodo: mysqlEnum("metodo", metodoPagoValues).notNull(),
+    estado: mysqlEnum("estado", estadoPagoValues).notNull().default("pendiente"),
+    procesadoEn: timestamp("procesado_en", { mode: "date" }),
   },
   (table) => [index("idx_pagos_estado").on(table.estado)],
 );

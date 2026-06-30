@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { sql } from "drizzle-orm";
+import { count, sql } from "drizzle-orm";
 import { C, ts, U, VEH } from "./ids.js";
 import { db } from "./index.js";
 import { conductores, pagos, usuarios, vehiculos, viajes } from "./schema.js";
@@ -21,9 +21,13 @@ const V = {
 
 async function seed() {
   console.log("Limpiando tablas...");
-  await db.execute(
-    sql`TRUNCATE TABLE pagos, viajes, vehiculos, conductores, usuarios RESTART IDENTITY CASCADE`,
-  );
+  await db.execute(sql`SET FOREIGN_KEY_CHECKS = 0`);
+  await db.execute(sql`TRUNCATE TABLE pagos`);
+  await db.execute(sql`TRUNCATE TABLE viajes`);
+  await db.execute(sql`TRUNCATE TABLE vehiculos`);
+  await db.execute(sql`TRUNCATE TABLE conductores`);
+  await db.execute(sql`TRUNCATE TABLE usuarios`);
+  await db.execute(sql`SET FOREIGN_KEY_CHECKS = 1`);
 
   console.log("Insertando usuarios...");
   await db.insert(usuarios).values([
@@ -313,29 +317,21 @@ async function seed() {
     { pagoId: "880e8400-e29b-41d4-a716-44665544000a", viajeId: V.v12, monto: "7500.00", moneda: "ARS", metodo: "efectivo", estado: "capturado", procesadoEn: ts(19, 51, 30) },
   ]);
 
-  const counts = await db.execute(sql`
-    SELECT
-      (SELECT COUNT(*)::int FROM usuarios) AS usuarios,
-      (SELECT COUNT(*)::int FROM conductores) AS conductores,
-      (SELECT COUNT(*)::int FROM vehiculos) AS vehiculos,
-      (SELECT COUNT(*)::int FROM viajes) AS viajes,
-      (SELECT COUNT(*)::int FROM pagos) AS pagos
-  `);
-
-  const row = counts.rows[0] as {
-    usuarios: number;
-    conductores: number;
-    vehiculos: number;
-    viajes: number;
-    pagos: number;
-  };
+  const [[usuariosCount], [conductoresCount], [vehiculosCount], [viajesCount], [pagosCount]] =
+    await Promise.all([
+      db.select({ value: count() }).from(usuarios),
+      db.select({ value: count() }).from(conductores),
+      db.select({ value: count() }).from(vehiculos),
+      db.select({ value: count() }).from(viajes),
+      db.select({ value: count() }).from(pagos),
+    ]);
 
   console.log("Seed completado:");
-  console.log(`  usuarios:    ${row.usuarios}`);
-  console.log(`  conductores: ${row.conductores}`);
-  console.log(`  vehiculos:   ${row.vehiculos}`);
-  console.log(`  viajes:      ${row.viajes}`);
-  console.log(`  pagos:       ${row.pagos}`);
+  console.log(`  usuarios:    ${usuariosCount.value}`);
+  console.log(`  conductores: ${conductoresCount.value}`);
+  console.log(`  vehiculos:   ${vehiculosCount.value}`);
+  console.log(`  viajes:      ${viajesCount.value}`);
+  console.log(`  pagos:       ${pagosCount.value}`);
 }
 
 seed()

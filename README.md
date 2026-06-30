@@ -1,13 +1,13 @@
-# Uber Viajes — Bases de datos PostgreSQL y Cassandra
+# Uber Viajes — Bases de datos MySQL y Cassandra
 
-Proyecto del TPO con el modelo relacional del ciclo de vida de viajes (usuarios, conductores, vehículos, viajes y pagos), usando **PostgreSQL**, **Cassandra**, **Drizzle ORM** y **TypeScript**.
+Proyecto del TPO con el modelo relacional del ciclo de vida de viajes (usuarios, conductores, vehículos, viajes y pagos), usando **MySQL**, **Cassandra**, **Drizzle ORM** y **TypeScript**.
 
 Los diagramas del modelo están en [`DIAGRAMAS.md`](./DIAGRAMAS.md).
 
 ## Requisitos
 
 - [Node.js](https://nodejs.org/) 18+
-- [Docker](https://www.docker.com/) (para levantar PostgreSQL y Cassandra localmente)
+- [Docker](https://www.docker.com/) (para levantar MySQL y Cassandra localmente)
 
 ## Preparar Todo Desde Cero
 
@@ -26,13 +26,13 @@ cp .env.example .env
 Los valores por defecto apuntan a las bases levantadas con Docker Compose:
 
 ```env
-DATABASE_URL=postgresql://uber:uber@localhost:5432/uber_viajes
+DATABASE_URL=mysql://uber:uber@localhost:3306/uber_viajes
 CASSANDRA_HOST=localhost
 CASSANDRA_KEYSPACE=uber
 CASSANDRA_DATACENTER=datacenter1
 ```
 
-3. Levantar PostgreSQL y Cassandra:
+3. Levantar MySQL y Cassandra:
 
 ```bash
 docker compose up -d
@@ -46,10 +46,10 @@ Este comando levanta ambas bases. Además, el servicio `cassandra-init` crea aut
 docker compose ps
 ```
 
-5. Aplicar las migraciones de PostgreSQL:
+5. Aplicar las migraciones de MySQL:
 
 ```bash
-npm run postgres:migrate
+npm run mysql:migrate
 ```
 
 6. Aplicar el esquema de Cassandra:
@@ -74,35 +74,35 @@ Los seeds son **idempotentes**: borran las tablas y vuelven a insertar los regis
 npm run cassandra:list
 ```
 
-9. Opcionalmente, abrir Drizzle Studio para explorar PostgreSQL:
+9. Opcionalmente, abrir Drizzle Studio para explorar MySQL:
 
 ```bash
-npm run postgres:studio
+npm run mysql:studio
 ```
 
 ### Comandos Útiles Del Setup
 
-Alternativa para desarrollo rápido sin migraciones PostgreSQL:
+Alternativa para desarrollo rápido sin migraciones MySQL:
 
 ```bash
-npm run postgres:push
+npm run mysql:push
 ```
 
 Si modificás `src/db/schema.ts`, generá una nueva migración con:
 
 ```bash
-npm run postgres:generate
-npm run postgres:migrate
+npm run mysql:generate
+npm run mysql:migrate
 ```
 
 Para ejecutar los seeds por separado:
 
 ```bash
-npm run postgres:seed
+npm run mysql:seed
 npm run cassandra:seed
 ```
 
-Salida esperada del seed PostgreSQL:
+Salida esperada del seed MySQL:
 
 ```text
 Seed completado:
@@ -122,14 +122,14 @@ Seed Cassandra completado:
 
 ## Datos de conexión local
 
-PostgreSQL:
+MySQL:
 
 - Host: `localhost`
-- Puerto: `5432`
+- Puerto: `3306`
 - Base de datos: `uber_viajes`
 - Usuario: `uber`
 - Password: `uber`
-- URL: `postgresql://uber:uber@localhost:5432/uber_viajes`
+- URL: `mysql://uber:uber@localhost:3306/uber_viajes`
 
 Cassandra:
 
@@ -144,7 +144,7 @@ Cassandra:
 Drizzle Studio abre una interfaz web para consultar las tablas:
 
 ```bash
-npm run postgres:studio
+npm run mysql:studio
 ```
 
 Para probar la consulta Cassandra del TPO, que lista hasta 5 conductores por zona (`geohash`):
@@ -163,22 +163,22 @@ npm run cassandra:list -- 69y7p
 
 | Comando | Descripción |
 |---------|-------------|
-| `npm run postgres:generate` | Genera migraciones a partir del schema PostgreSQL |
-| `npm run postgres:migrate` | Aplica migraciones pendientes de PostgreSQL |
-| `npm run postgres:push` | Sincroniza el schema PostgreSQL directo a la base (sin migración) |
-| `npm run postgres:seed` | Carga los datos de prueba en PostgreSQL |
-| `npm run postgres:studio` | Abre Drizzle Studio |
+| `npm run mysql:generate` | Genera migraciones a partir del schema MySQL |
+| `npm run mysql:migrate` | Aplica migraciones pendientes de MySQL |
+| `npm run mysql:push` | Sincroniza el schema MySQL directo a la base (sin migración) |
+| `npm run mysql:seed` | Carga los datos de prueba en MySQL |
+| `npm run mysql:studio` | Abre Drizzle Studio |
 | `npm run cassandra:migrate` | Aplica el esquema CQL de Cassandra |
 | `npm run cassandra:seed` | Carga `conductores_por_zona` en Cassandra |
 | `npm run cassandra:list` | Lista hasta 5 conductores para un geohash |
-| `npm run seed:all` | Corre el seed PostgreSQL y luego el seed Cassandra |
+| `npm run seed:all` | Corre el seed MySQL y luego el seed Cassandra |
 
 ## Estructura relevante
 
 ```
 src/db/
   schema.ts   # Definición de tablas y relaciones
-  index.ts    # Conexión a PostgreSQL
+  index.ts    # Conexión a MySQL
   seed.ts     # Datos de prueba
 src/cassandra/
   index.ts    # Conexión a Cassandra
@@ -190,7 +190,7 @@ src/scripts/
 cassandra/
   schema.cql  # Keyspace y tabla conductores_por_zona
 drizzle/      # Migraciones SQL
-docker-compose.yml # PostgreSQL y Cassandra locales
+docker-compose.yml # MySQL y Cassandra locales
 ```
 
 La tabla `viajes` referencia el `vehiculo_id` asignado, por lo que una consulta del viaje puede mostrar el auto que ve el pasajero: patente, marca, modelo y color.
@@ -209,26 +209,26 @@ docker compose down -v
 
 ## Problemas frecuentes
 
-### `postgres:migrate` se queda en "applying migrations..." y falla
+### `mysql:migrate` se queda en "applying migrations..." y falla
 
 Casi siempre la base no está disponible. Verificá el contenedor:
 
 ```bash
 docker compose ps
-docker compose logs postgres --tail 30
+docker compose logs mysql --tail 30
 ```
 
-Si ves `Restarting`, reiniciá con volumen limpio (necesario si cambiaste de versión de PostgreSQL):
+Si ves `Restarting`, reiniciá con volumen limpio (necesario si cambiaste de versión de MySQL):
 
 ```bash
 docker compose down -v
 docker compose up -d
 ```
 
-> **PostgreSQL 18+** requiere montar el volumen en `/var/lib/postgresql` (no en `/var/lib/postgresql/data`). Este proyecto ya usa esa configuración.
+> MySQL inicializa el usuario y la base solo cuando el volumen está vacío. Si cambiaste credenciales o nombre de base, recreá el volumen con `docker compose down -v`.
 
 Esperá a que el healthcheck pase y volvé a migrar:
 
 ```bash
-npm run postgres:migrate
+npm run mysql:migrate
 ```
