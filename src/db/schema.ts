@@ -71,16 +71,32 @@ export const conductores = pgTable(
       .unique()
       .references(() => usuarios.usuarioId),
     licencia: varchar("licencia", { length: 50 }).notNull().unique(),
-    tipoVehiculo: tipoVehiculoEnum("tipo_vehiculo").notNull(),
     calificacion: decimal("calificacion", { precision: 3, scale: 2 })
       .notNull()
       .default("5.00"),
     viajesTotal: integer("viajes_total").notNull().default(0),
     activo: boolean("activo").notNull().default(true),
   },
+  (table) => [index("idx_conductores_calificacion").on(table.calificacion)],
+);
+
+export const vehiculos = pgTable(
+  "vehiculos",
+  {
+    vehiculoId: uuid("vehiculo_id").primaryKey().defaultRandom(),
+    conductorId: uuid("conductor_id")
+      .notNull()
+      .references(() => conductores.conductorId),
+    patente: varchar("patente", { length: 10 }).notNull().unique(),
+    marca: varchar("marca", { length: 80 }).notNull(),
+    modelo: varchar("modelo", { length: 80 }).notNull(),
+    color: varchar("color", { length: 40 }).notNull(),
+    tipoVehiculo: tipoVehiculoEnum("tipo_vehiculo").notNull(),
+    activo: boolean("activo").notNull().default(true),
+  },
   (table) => [
-    index("idx_conductores_tipo_vehiculo").on(table.tipoVehiculo),
-    index("idx_conductores_calificacion").on(table.calificacion),
+    index("idx_vehiculos_conductor_id").on(table.conductorId),
+    index("idx_vehiculos_tipo_vehiculo").on(table.tipoVehiculo),
   ],
 );
 
@@ -94,6 +110,9 @@ export const viajes = pgTable(
     conductorId: uuid("conductor_id")
       .notNull()
       .references(() => conductores.conductorId),
+    vehiculoId: uuid("vehiculo_id")
+      .notNull()
+      .references(() => vehiculos.vehiculoId),
     estado: estadoViajeEnum("estado").notNull().default("solicitado"),
     solicitadoEn: timestamp("solicitado_en", { withTimezone: true })
       .notNull()
@@ -114,6 +133,7 @@ export const viajes = pgTable(
   (table) => [
     index("idx_viajes_pasajero_id").on(table.pasajeroId),
     index("idx_viajes_conductor_id").on(table.conductorId),
+    index("idx_viajes_vehiculo_id").on(table.vehiculoId),
     index("idx_viajes_estado").on(table.estado),
     index("idx_viajes_solicitado_en").on(table.solicitadoEn),
   ],
@@ -151,6 +171,15 @@ export const conductoresRelations = relations(conductores, ({ one, many }) => ({
     fields: [conductores.usuarioId],
     references: [usuarios.usuarioId],
   }),
+  vehiculos: many(vehiculos),
+  viajes: many(viajes),
+}));
+
+export const vehiculosRelations = relations(vehiculos, ({ one, many }) => ({
+  conductor: one(conductores, {
+    fields: [vehiculos.conductorId],
+    references: [conductores.conductorId],
+  }),
   viajes: many(viajes),
 }));
 
@@ -162,6 +191,10 @@ export const viajesRelations = relations(viajes, ({ one }) => ({
   conductor: one(conductores, {
     fields: [viajes.conductorId],
     references: [conductores.conductorId],
+  }),
+  vehiculo: one(vehiculos, {
+    fields: [viajes.vehiculoId],
+    references: [vehiculos.vehiculoId],
   }),
   pago: one(pagos, {
     fields: [viajes.viajeId],

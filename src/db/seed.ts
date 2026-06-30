@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { sql } from "drizzle-orm";
 import { db } from "./index.js";
-import { conductores, pagos, usuarios, viajes } from "./schema.js";
+import { conductores, pagos, usuarios, vehiculos, viajes } from "./schema.js";
 
 const BASE_DATE = { year: 2025, month: 4, day: 22 }; // 2025-05-22 UTC
 
@@ -47,6 +47,19 @@ const C = {
   gabriela: "660e8400-e29b-41d4-a716-446655440019",
 } as const;
 
+const VEH = {
+  carlos: "990e8400-e29b-41d4-a716-446655440010",
+  ana: "990e8400-e29b-41d4-a716-446655440011",
+  diego: "990e8400-e29b-41d4-a716-446655440012",
+  paula: "990e8400-e29b-41d4-a716-446655440013",
+  martin: "990e8400-e29b-41d4-a716-446655440014",
+  laura: "990e8400-e29b-41d4-a716-446655440015",
+  roberto: "990e8400-e29b-41d4-a716-446655440016",
+  elena: "990e8400-e29b-41d4-a716-446655440017",
+  facundo: "990e8400-e29b-41d4-a716-446655440018",
+  gabriela: "990e8400-e29b-41d4-a716-446655440019",
+} as const;
+
 const V = {
   v1: "660e8400-e29b-41d4-a716-446655440001",
   v2: "660e8400-e29b-41d4-a716-446655440002",
@@ -65,7 +78,7 @@ const V = {
 async function seed() {
   console.log("Limpiando tablas...");
   await db.execute(
-    sql`TRUNCATE TABLE pagos, viajes, conductores, usuarios RESTART IDENTITY CASCADE`,
+    sql`TRUNCATE TABLE pagos, viajes, vehiculos, conductores, usuarios RESTART IDENTITY CASCADE`,
   );
 
   console.log("Insertando usuarios...");
@@ -92,16 +105,30 @@ async function seed() {
 
   console.log("Insertando conductores...");
   await db.insert(conductores).values([
-    { conductorId: C.carlos, usuarioId: U.carlos, licencia: "AB123CD", tipoVehiculo: "uberX", calificacion: "4.92", viajesTotal: 1247, activo: true },
-    { conductorId: C.ana, usuarioId: U.ana, licencia: "AC456EF", tipoVehiculo: "uberXL", calificacion: "4.85", viajesTotal: 892, activo: true },
-    { conductorId: C.diego, usuarioId: U.diego, licencia: "AD789GH", tipoVehiculo: "black", calificacion: "4.98", viajesTotal: 2103, activo: true },
-    { conductorId: C.paula, usuarioId: U.paula, licencia: "AE012IJ", tipoVehiculo: "black", calificacion: "4.76", viajesTotal: 456, activo: true },
-    { conductorId: C.martin, usuarioId: U.martin, licencia: "AF345KL", tipoVehiculo: "uberX", calificacion: "4.65", viajesTotal: 178, activo: false },
-    { conductorId: C.laura, usuarioId: U.laura, licencia: "AG678MN", tipoVehiculo: "uberX", calificacion: "4.88", viajesTotal: 634, activo: true },
-    { conductorId: C.roberto, usuarioId: U.roberto, licencia: "AH901OP", tipoVehiculo: "uberXL", calificacion: "4.71", viajesTotal: 312, activo: true },
-    { conductorId: C.elena, usuarioId: U.elena, licencia: "AI234QR", tipoVehiculo: "black", calificacion: "4.95", viajesTotal: 1580, activo: true },
-    { conductorId: C.facundo, usuarioId: U.facundo, licencia: "AJ567ST", tipoVehiculo: "uberX", calificacion: "4.82", viajesTotal: 723, activo: true },
-    { conductorId: C.gabriela, usuarioId: U.gabriela, licencia: "AK890UV", tipoVehiculo: "uberXL", calificacion: "4.90", viajesTotal: 945, activo: false },
+    { conductorId: C.carlos, usuarioId: U.carlos, licencia: "LIC-CARLOS-001", calificacion: "4.92", viajesTotal: 1247, activo: true },
+    { conductorId: C.ana, usuarioId: U.ana, licencia: "LIC-ANA-002", calificacion: "4.85", viajesTotal: 892, activo: true },
+    { conductorId: C.diego, usuarioId: U.diego, licencia: "LIC-DIEGO-003", calificacion: "4.98", viajesTotal: 2103, activo: true },
+    { conductorId: C.paula, usuarioId: U.paula, licencia: "LIC-PAULA-004", calificacion: "4.76", viajesTotal: 456, activo: true },
+    { conductorId: C.martin, usuarioId: U.martin, licencia: "LIC-MARTIN-005", calificacion: "4.65", viajesTotal: 178, activo: false },
+    { conductorId: C.laura, usuarioId: U.laura, licencia: "LIC-LAURA-006", calificacion: "4.88", viajesTotal: 634, activo: true },
+    { conductorId: C.roberto, usuarioId: U.roberto, licencia: "LIC-ROBERTO-007", calificacion: "4.71", viajesTotal: 312, activo: true },
+    { conductorId: C.elena, usuarioId: U.elena, licencia: "LIC-ELENA-008", calificacion: "4.95", viajesTotal: 1580, activo: true },
+    { conductorId: C.facundo, usuarioId: U.facundo, licencia: "LIC-FACUNDO-009", calificacion: "4.82", viajesTotal: 723, activo: true },
+    { conductorId: C.gabriela, usuarioId: U.gabriela, licencia: "LIC-GABRIELA-010", calificacion: "4.90", viajesTotal: 945, activo: false },
+  ]);
+
+  console.log("Insertando vehiculos...");
+  await db.insert(vehiculos).values([
+    { vehiculoId: VEH.carlos, conductorId: C.carlos, patente: "AB123CD", marca: "Toyota", modelo: "Corolla", color: "Blanco", tipoVehiculo: "uberX", activo: true },
+    { vehiculoId: VEH.ana, conductorId: C.ana, patente: "AC456EF", marca: "Chevrolet", modelo: "Tracker", color: "Gris", tipoVehiculo: "uberXL", activo: true },
+    { vehiculoId: VEH.diego, conductorId: C.diego, patente: "AD789GH", marca: "Volkswagen", modelo: "Virtus", color: "Negro", tipoVehiculo: "black", activo: true },
+    { vehiculoId: VEH.paula, conductorId: C.paula, patente: "AE012IJ", marca: "Ford", modelo: "Mondeo", color: "Azul oscuro", tipoVehiculo: "black", activo: true },
+    { vehiculoId: VEH.martin, conductorId: C.martin, patente: "AF345KL", marca: "Nissan", modelo: "Versa", color: "Rojo", tipoVehiculo: "uberX", activo: false },
+    { vehiculoId: VEH.laura, conductorId: C.laura, patente: "AG678MN", marca: "Fiat", modelo: "Cronos", color: "Plateado", tipoVehiculo: "uberX", activo: true },
+    { vehiculoId: VEH.roberto, conductorId: C.roberto, patente: "AH901OP", marca: "Renault", modelo: "Duster", color: "Gris oscuro", tipoVehiculo: "uberXL", activo: true },
+    { vehiculoId: VEH.elena, conductorId: C.elena, patente: "AI234QR", marca: "Peugeot", modelo: "408", color: "Negro", tipoVehiculo: "black", activo: true },
+    { vehiculoId: VEH.facundo, conductorId: C.facundo, patente: "AJ567ST", marca: "Honda", modelo: "City", color: "Blanco", tipoVehiculo: "uberX", activo: true },
+    { vehiculoId: VEH.gabriela, conductorId: C.gabriela, patente: "AK890UV", marca: "Citroen", modelo: "C4 Cactus", color: "Bordo", tipoVehiculo: "uberXL", activo: false },
   ]);
 
   console.log("Insertando viajes...");
@@ -110,6 +137,7 @@ async function seed() {
       viajeId: V.v1,
       pasajeroId: U.maria,
       conductorId: C.carlos,
+      vehiculoId: VEH.carlos,
       estado: "completado",
       solicitadoEn: ts(10, 0, 0),
       aceptadoEn: ts(10, 0, 15),
@@ -129,6 +157,7 @@ async function seed() {
       viajeId: V.v2,
       pasajeroId: U.juan,
       conductorId: C.ana,
+      vehiculoId: VEH.ana,
       estado: "en_progreso",
       solicitadoEn: ts(14, 10, 0),
       aceptadoEn: ts(14, 10, 20),
@@ -144,6 +173,7 @@ async function seed() {
       viajeId: V.v3,
       pasajeroId: U.sofia,
       conductorId: C.diego,
+      vehiculoId: VEH.diego,
       estado: "aceptado",
       solicitadoEn: ts(16, 30, 0),
       aceptadoEn: ts(16, 30, 18),
@@ -158,6 +188,7 @@ async function seed() {
       viajeId: V.v4,
       pasajeroId: U.lucas,
       conductorId: C.paula,
+      vehiculoId: VEH.paula,
       estado: "solicitado",
       solicitadoEn: ts(18, 0, 0),
       origenLatitud: -34.6187,
@@ -171,6 +202,7 @@ async function seed() {
       viajeId: V.v5,
       pasajeroId: U.valentina,
       conductorId: C.martin,
+      vehiculoId: VEH.martin,
       estado: "cancelado",
       solicitadoEn: ts(11, 45, 0),
       aceptadoEn: ts(11, 45, 30),
@@ -185,6 +217,7 @@ async function seed() {
       viajeId: V.v6,
       pasajeroId: U.mateo,
       conductorId: C.carlos,
+      vehiculoId: VEH.carlos,
       estado: "completado",
       solicitadoEn: ts(9, 0, 0),
       aceptadoEn: ts(9, 0, 12),
@@ -204,6 +237,7 @@ async function seed() {
       viajeId: V.v7,
       pasajeroId: U.camila,
       conductorId: C.ana,
+      vehiculoId: VEH.ana,
       estado: "completado",
       solicitadoEn: ts(13, 20, 0),
       aceptadoEn: ts(13, 20, 25),
@@ -223,6 +257,7 @@ async function seed() {
       viajeId: V.v8,
       pasajeroId: U.tomas,
       conductorId: C.diego,
+      vehiculoId: VEH.diego,
       estado: "completado",
       solicitadoEn: ts(20, 0, 0),
       aceptadoEn: ts(20, 0, 40),
@@ -242,6 +277,7 @@ async function seed() {
       viajeId: V.v9,
       pasajeroId: U.maria,
       conductorId: C.paula,
+      vehiculoId: VEH.paula,
       estado: "completado",
       solicitadoEn: ts(15, 0, 0),
       aceptadoEn: ts(15, 0, 10),
@@ -261,6 +297,7 @@ async function seed() {
       viajeId: V.v10,
       pasajeroId: U.juan,
       conductorId: C.carlos,
+      vehiculoId: VEH.carlos,
       estado: "completado",
       solicitadoEn: ts(8, 30, 0),
       aceptadoEn: ts(8, 30, 8),
@@ -280,6 +317,7 @@ async function seed() {
       viajeId: V.v11,
       pasajeroId: U.sofia,
       conductorId: C.laura,
+      vehiculoId: VEH.laura,
       estado: "completado",
       solicitadoEn: ts(17, 0, 0),
       aceptadoEn: ts(17, 0, 22),
@@ -299,6 +337,7 @@ async function seed() {
       viajeId: V.v12,
       pasajeroId: U.lucas,
       conductorId: C.roberto,
+      vehiculoId: VEH.roberto,
       estado: "completado",
       solicitadoEn: ts(19, 30, 0),
       aceptadoEn: ts(19, 30, 35),
@@ -334,6 +373,7 @@ async function seed() {
     SELECT
       (SELECT COUNT(*)::int FROM usuarios) AS usuarios,
       (SELECT COUNT(*)::int FROM conductores) AS conductores,
+      (SELECT COUNT(*)::int FROM vehiculos) AS vehiculos,
       (SELECT COUNT(*)::int FROM viajes) AS viajes,
       (SELECT COUNT(*)::int FROM pagos) AS pagos
   `);
@@ -341,6 +381,7 @@ async function seed() {
   const row = counts.rows[0] as {
     usuarios: number;
     conductores: number;
+    vehiculos: number;
     viajes: number;
     pagos: number;
   };
@@ -348,6 +389,7 @@ async function seed() {
   console.log("Seed completado:");
   console.log(`  usuarios:    ${row.usuarios}`);
   console.log(`  conductores: ${row.conductores}`);
+  console.log(`  vehiculos:   ${row.vehiculos}`);
   console.log(`  viajes:      ${row.viajes}`);
   console.log(`  pagos:       ${row.pagos}`);
 }

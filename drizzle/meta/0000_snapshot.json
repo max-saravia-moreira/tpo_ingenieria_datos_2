@@ -27,13 +27,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "tipo_vehiculo": {
-          "name": "tipo_vehiculo",
-          "type": "tipo_vehiculo",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
         "calificacion": {
           "name": "calificacion",
           "type": "numeric(3, 2)",
@@ -57,21 +50,6 @@
         }
       },
       "indexes": {
-        "idx_conductores_tipo_vehiculo": {
-          "name": "idx_conductores_tipo_vehiculo",
-          "columns": [
-            {
-              "expression": "tipo_vehiculo",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "idx_conductores_calificacion": {
           "name": "idx_conductores_calificacion",
           "columns": [
@@ -117,6 +95,123 @@
           "nullsNotDistinct": false,
           "columns": [
             "licencia"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehiculos": {
+      "name": "vehiculos",
+      "schema": "",
+      "columns": {
+        "vehiculo_id": {
+          "name": "vehiculo_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "conductor_id": {
+          "name": "conductor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "patente": {
+          "name": "patente",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "marca": {
+          "name": "marca",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "modelo": {
+          "name": "modelo",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "color": {
+          "name": "color",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipo_vehiculo": {
+          "name": "tipo_vehiculo",
+          "type": "tipo_vehiculo",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "activo": {
+          "name": "activo",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        }
+      },
+      "indexes": {
+        "idx_vehiculos_conductor_id": {
+          "name": "idx_vehiculos_conductor_id",
+          "columns": [
+            {
+              "expression": "conductor_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_vehiculos_tipo_vehiculo": {
+          "name": "idx_vehiculos_tipo_vehiculo",
+          "columns": [
+            {
+              "expression": "tipo_vehiculo",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "vehiculos_conductor_id_conductores_conductor_id_fk": {
+          "name": "vehiculos_conductor_id_conductores_conductor_id_fk",
+          "tableFrom": "vehiculos",
+          "tableTo": "conductores",
+          "columnsFrom": [
+            "conductor_id"
+          ],
+          "columnsTo": [
+            "conductor_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehiculos_patente_unique": {
+          "name": "vehiculos_patente_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "patente"
           ]
         }
       },
@@ -321,6 +416,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "vehiculo_id": {
+          "name": "vehiculo_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
         "estado": {
           "name": "estado",
           "type": "estado_viaje",
@@ -441,6 +542,21 @@
           "method": "btree",
           "with": {}
         },
+        "idx_viajes_vehiculo_id": {
+          "name": "idx_viajes_vehiculo_id",
+          "columns": [
+            {
+              "expression": "vehiculo_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "idx_viajes_estado": {
           "name": "idx_viajes_estado",
           "columns": [
@@ -495,6 +611,19 @@
           ],
           "columnsTo": [
             "conductor_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "viajes_vehiculo_id_vehiculos_vehiculo_id_fk": {
+          "name": "viajes_vehiculo_id_vehiculos_vehiculo_id_fk",
+          "tableFrom": "viajes",
+          "tableTo": "vehiculos",
+          "columnsFrom": [
+            "vehiculo_id"
+          ],
+          "columnsTo": [
+            "vehiculo_id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"

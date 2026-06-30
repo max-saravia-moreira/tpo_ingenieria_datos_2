@@ -1,6 +1,6 @@
 # Uber Viajes — Bases de datos PostgreSQL y Cassandra
 
-Proyecto del TPO con el modelo relacional del ciclo de vida de viajes (usuarios, conductores, viajes y pagos), usando **PostgreSQL**, **Cassandra**, **Drizzle ORM** y **TypeScript**.
+Proyecto del TPO con el modelo relacional del ciclo de vida de viajes (usuarios, conductores, vehículos, viajes y pagos), usando **PostgreSQL**, **Cassandra**, **Drizzle ORM** y **TypeScript**.
 
 ## Requisitos
 
@@ -98,6 +98,7 @@ Salida esperada:
 Seed completado:
   usuarios:    18
   conductores: 10
+  vehiculos:   10
   viajes:      12
   pagos:       10
 ```
@@ -130,6 +131,8 @@ src/db/
 drizzle/      # Migraciones SQL
 docker-compose.yml # PostgreSQL y Cassandra locales
 ```
+
+La tabla `viajes` referencia el `vehiculo_id` asignado, por lo que una consulta del viaje puede mostrar el auto que ve el pasajero: patente, marca, modelo y color.
 
 ## Detener la base de datos
 

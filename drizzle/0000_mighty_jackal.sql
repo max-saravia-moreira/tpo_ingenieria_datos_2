@@ -6,12 +6,23 @@ CREATE TABLE "conductores" (
 	"conductor_id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"usuario_id" uuid NOT NULL,
 	"licencia" varchar(50) NOT NULL,
-	"tipo_vehiculo" "tipo_vehiculo" NOT NULL,
 	"calificacion" numeric(3, 2) DEFAULT '5.00' NOT NULL,
 	"viajes_total" integer DEFAULT 0 NOT NULL,
 	"activo" boolean DEFAULT true NOT NULL,
 	CONSTRAINT "conductores_usuario_id_unique" UNIQUE("usuario_id"),
 	CONSTRAINT "conductores_licencia_unique" UNIQUE("licencia")
+);
+--> statement-breakpoint
+CREATE TABLE "vehiculos" (
+	"vehiculo_id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"conductor_id" uuid NOT NULL,
+	"patente" varchar(10) NOT NULL,
+	"marca" varchar(80) NOT NULL,
+	"modelo" varchar(80) NOT NULL,
+	"color" varchar(40) NOT NULL,
+	"tipo_vehiculo" "tipo_vehiculo" NOT NULL,
+	"activo" boolean DEFAULT true NOT NULL,
+	CONSTRAINT "vehiculos_patente_unique" UNIQUE("patente")
 );
 --> statement-breakpoint
 CREATE TABLE "pagos" (
@@ -39,6 +50,7 @@ CREATE TABLE "viajes" (
 	"viaje_id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"pasajero_id" uuid NOT NULL,
 	"conductor_id" uuid NOT NULL,
+	"vehiculo_id" uuid NOT NULL,
 	"estado" "estado_viaje" DEFAULT 'solicitado' NOT NULL,
 	"solicitado_en" timestamp with time zone DEFAULT now() NOT NULL,
 	"aceptado_en" timestamp with time zone,
@@ -56,14 +68,18 @@ CREATE TABLE "viajes" (
 );
 --> statement-breakpoint
 ALTER TABLE "conductores" ADD CONSTRAINT "conductores_usuario_id_usuarios_usuario_id_fk" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuarios"("usuario_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "vehiculos" ADD CONSTRAINT "vehiculos_conductor_id_conductores_conductor_id_fk" FOREIGN KEY ("conductor_id") REFERENCES "public"."conductores"("conductor_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "pagos" ADD CONSTRAINT "pagos_viaje_id_viajes_viaje_id_fk" FOREIGN KEY ("viaje_id") REFERENCES "public"."viajes"("viaje_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "viajes" ADD CONSTRAINT "viajes_pasajero_id_usuarios_usuario_id_fk" FOREIGN KEY ("pasajero_id") REFERENCES "public"."usuarios"("usuario_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "viajes" ADD CONSTRAINT "viajes_conductor_id_conductores_conductor_id_fk" FOREIGN KEY ("conductor_id") REFERENCES "public"."conductores"("conductor_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-CREATE INDEX "idx_conductores_tipo_vehiculo" ON "conductores" USING btree ("tipo_vehiculo");--> statement-breakpoint
+ALTER TABLE "viajes" ADD CONSTRAINT "viajes_vehiculo_id_vehiculos_vehiculo_id_fk" FOREIGN KEY ("vehiculo_id") REFERENCES "public"."vehiculos"("vehiculo_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "idx_conductores_calificacion" ON "conductores" USING btree ("calificacion");--> statement-breakpoint
+CREATE INDEX "idx_vehiculos_conductor_id" ON "vehiculos" USING btree ("conductor_id");--> statement-breakpoint
+CREATE INDEX "idx_vehiculos_tipo_vehiculo" ON "vehiculos" USING btree ("tipo_vehiculo");--> statement-breakpoint
 CREATE INDEX "idx_pagos_estado" ON "pagos" USING btree ("estado");--> statement-breakpoint
 CREATE INDEX "idx_usuarios_telefono" ON "usuarios" USING btree ("telefono");--> statement-breakpoint
 CREATE INDEX "idx_viajes_pasajero_id" ON "viajes" USING btree ("pasajero_id");--> statement-breakpoint
 CREATE INDEX "idx_viajes_conductor_id" ON "viajes" USING btree ("conductor_id");--> statement-breakpoint
+CREATE INDEX "idx_viajes_vehiculo_id" ON "viajes" USING btree ("vehiculo_id");--> statement-breakpoint
 CREATE INDEX "idx_viajes_estado" ON "viajes" USING btree ("estado");--> statement-breakpoint
 CREATE INDEX "idx_viajes_solicitado_en" ON "viajes" USING btree ("solicitado_en");
