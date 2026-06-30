@@ -9,11 +9,9 @@ CREATE TABLE IF NOT EXISTS uber.conductores_por_zona (
   nombre text,
   licencia text,
   viajes_total int,
-  conductor_activo boolean,
   marca text,
   modelo text,
   color text,
-  vehiculo_activo boolean,
   updated_at timestamp,
   PRIMARY KEY (geohash, tipo_vehiculo, calificacion, patente)
 ) WITH CLUSTERING ORDER BY (
