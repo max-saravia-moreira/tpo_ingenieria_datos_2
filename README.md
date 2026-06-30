@@ -65,6 +65,8 @@ docker compose ps
 
 ## Crear el esquema
 
+PostgreSQL:
+
 **Primera vez** (aplica la migración inicial):
 
 ```bash
@@ -84,9 +86,19 @@ npm run db:generate
 npm run db:migrate
 ```
 
+Cassandra:
+
+```bash
+npm run cassandra:migrate
+```
+
+> Cassandra puede tardar cerca de un minuto en quedar disponible después de `docker compose up -d`. Si el comando reintenta la conexión, esperá a que el healthcheck termine y volvé a ejecutarlo si fuera necesario.
+
 ## Cargar datos de prueba (seed)
 
-El seed es **idempotente**: borra las tablas y vuelve a insertar los registros definidos en `src/db/seed.ts`.
+Los seeds son **idempotentes**: borran las tablas y vuelven a insertar los registros definidos en `src/db/seed.ts` y `src/cassandra/seed.ts`.
+
+PostgreSQL:
 
 ```bash
 npm run db:seed
@@ -103,12 +115,43 @@ Seed completado:
   pagos:       10
 ```
 
+Cassandra:
+
+```bash
+npm run cassandra:seed
+```
+
+Salida esperada:
+
+```
+Seed Cassandra completado:
+  conductores_por_zona: 10
+```
+
+También podés correr ambos seeds en secuencia:
+
+```bash
+npm run db:seed:all
+```
+
 ## Explorar los datos
 
 Drizzle Studio abre una interfaz web para consultar las tablas:
 
 ```bash
 npm run db:studio
+```
+
+Para probar la consulta Cassandra del TPO, que lista hasta 5 conductores por zona (`geohash`):
+
+```bash
+npm run cassandra:list
+```
+
+El comando usa un geohash de ejemplo incluido en el seed. También acepta uno explícito:
+
+```bash
+npm run cassandra:list -- 69y7p
 ```
 
 ## Scripts disponibles
@@ -120,6 +163,10 @@ npm run db:studio
 | `npm run db:push` | Sincroniza el schema directo a la base (sin migración) |
 | `npm run db:seed` | Carga los datos de prueba |
 | `npm run db:studio` | Abre Drizzle Studio |
+| `npm run cassandra:migrate` | Aplica el esquema CQL de Cassandra |
+| `npm run cassandra:seed` | Carga `conductores_por_zona` en Cassandra |
+| `npm run cassandra:list` | Lista hasta 5 conductores para un geohash |
+| `npm run db:seed:all` | Corre el seed PostgreSQL y luego el seed Cassandra |
 
 ## Estructura relevante
 
@@ -128,6 +175,15 @@ src/db/
   schema.ts   # Definición de tablas y relaciones
   index.ts    # Conexión a PostgreSQL
   seed.ts     # Datos de prueba
+src/cassandra/
+  index.ts    # Conexión a Cassandra
+  migrate.ts  # Aplica cassandra/schema.cql
+  seed.ts     # Datos de prueba para consultas por geohash
+  queries.ts  # Consultas Cassandra
+src/scripts/
+  list-conductores-zona.ts # Demo de consulta por geohash
+cassandra/
+  schema.cql  # Keyspace y tabla conductores_por_zona
 drizzle/      # Migraciones SQL
 docker-compose.yml # PostgreSQL y Cassandra locales
 ```
