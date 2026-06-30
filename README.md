@@ -1,11 +1,11 @@
-# Uber Viajes — Base de datos PostgreSQL
+# Uber Viajes — Bases de datos PostgreSQL y Cassandra
 
-Proyecto del TPO con el modelo relacional del ciclo de vida de viajes (usuarios, conductores, viajes y pagos), usando **PostgreSQL**, **Drizzle ORM** y **TypeScript**.
+Proyecto del TPO con el modelo relacional del ciclo de vida de viajes (usuarios, conductores, viajes y pagos), usando **PostgreSQL**, **Cassandra**, **Drizzle ORM** y **TypeScript**.
 
 ## Requisitos
 
 - [Node.js](https://nodejs.org/) 18+
-- [Docker](https://www.docker.com/) (para levantar PostgreSQL localmente)
+- [Docker](https://www.docker.com/) (para levantar PostgreSQL y Cassandra localmente)
 
 ## Configuración inicial
 
@@ -21,19 +21,43 @@ npm install
 cp .env.example .env
 ```
 
-El valor por defecto de `DATABASE_URL` apunta a la base levantada con Docker Compose:
+Los valores por defecto apuntan a las bases levantadas con Docker Compose:
 
 ```
-postgresql://uber:uber@localhost:5432/uber_viajes
+DATABASE_URL=postgresql://uber:uber@localhost:5432/uber_viajes
+CASSANDRA_HOST=localhost
+CASSANDRA_KEYSPACE=uber
+CASSANDRA_DATACENTER=datacenter1
 ```
 
-## Levantar la base de datos
+## Datos de conexión local
+
+PostgreSQL:
+
+- Host: `localhost`
+- Puerto: `5432`
+- Base de datos: `uber_viajes`
+- Usuario: `uber`
+- Password: `uber`
+- URL: `postgresql://uber:uber@localhost:5432/uber_viajes`
+
+Cassandra:
+
+- Host: `localhost`
+- Puerto: `9042`
+- Keyspace: `uber`
+- Datacenter local: `datacenter1`
+- Usuario/password: no configurados en Docker Compose
+
+## Levantar las bases de datos
 
 ```bash
 docker compose up -d
 ```
 
-Verificar que el contenedor esté healthy:
+Este comando levanta PostgreSQL y Cassandra. Además, el servicio `cassandra-init` crea automáticamente el keyspace `uber` si todavía no existe.
+
+Verificar que los contenedores estén healthy:
 
 ```bash
 docker compose ps
@@ -104,7 +128,7 @@ src/db/
   index.ts    # Conexión a PostgreSQL
   seed.ts     # Datos de prueba
 drizzle/      # Migraciones SQL
-docker-compose.yml
+docker-compose.yml # PostgreSQL y Cassandra locales
 ```
 
 ## Detener la base de datos
