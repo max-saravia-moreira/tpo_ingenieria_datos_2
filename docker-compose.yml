@@ -34,6 +34,21 @@ services:
       retries: 10
       start_period: 60s
 
+  cassandra-init:
+    image: cassandra:5.0
+    container_name: uber-cassandra-init
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    command:
+      - /bin/bash
+      - -c
+      - >
+        cqlsh cassandra 9042 -e
+        "CREATE KEYSPACE IF NOT EXISTS uber
+        WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};"
+    restart: "no"
+
 volumes:
   postgres_data:
   cassandra_data:
